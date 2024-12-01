@@ -111,7 +111,7 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 4000; //the port the server will listen
 mongoose
-  .connect("") // establishing connection to mongodb
+  .connect("mongodb://localhost:27017/codeblocks") // establishing connection to mongodb
   .then(() => console.log("MongoDB connected successfully")) //success message if mongodb connection is established
   .catch((error) => console.error("MongoDB connection error:", error)); // error if mongodb connection is fails
 
