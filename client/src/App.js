@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import { Controlled as CodeMirror } from "react-codemirror2";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 import "codemirror/lib/codemirror.css";
 import "codemirror/mode/javascript/javascript";
 import LobbyPage from "./pages/LobbyPage";
