@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:4000";
+const SOCKET_URL = "https://moveoproject-fcrr.onrender.com";
 
 let socket = null;
 
