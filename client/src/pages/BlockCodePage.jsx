@@ -50,7 +50,9 @@ const BlockCodePage = () => {
     const logs = [];
     const customConsole = {
       log: (...args) => {
-        logs.push(args.join(" "));
+        const logMessage = args.join(" ");
+        logs.push(logMessage);
+        setOutput((prev) => [...prev, logMessage].join("\n"));
       },
     };
 
@@ -63,37 +65,37 @@ const BlockCodePage = () => {
       const cleanUserCode = codeBlock.template.replace(/\s+/g, "").trim();
       const cleanSolution = codeBlock.solution.replace(/\s+/g, "").trim();
 
-      // Check if solution matches
+      // Solution check
       if (cleanUserCode === cleanSolution) {
         alert("Code is correct! ✅");
         setOutput("Code is correct!");
         return;
       }
 
-      // Execute code and capture output
-      const code = codeBlock.template;
+      // Clear previous output
+      setOutput("");
 
-      // Capture console.log calls
+      // Execute code in a controlled environment
+      // Use the original console.log but wrap it
       const originalLog = console.log;
       console.log = (...args) => {
-        logs.push(args.join(" "));
+        customConsole.log(...args);
+        originalLog(...args);
       };
 
-      // Execute the code
       try {
-        // Create and execute async function
-        const AsyncFunction = Object.getPrototypeOf(
-          async function () {}
-        ).constructor;
-        // eslint-disable-next-line no-new-func
-        const asyncExecute = new AsyncFunction("console", code);
-        asyncExecute(customConsole);
-
+        // Execute user code in a string context
+        (0, eval)(codeBlock.template);
+        debugger;
+        // Show incorrect message if solution exists
         if (cleanSolution) {
           alert("Code is incorrect ❌");
         }
 
-        setOutput(logs.join("\n") || "Code executed successfully");
+        // Show success message if no logs were generated
+        if (logs.length === 0) {
+          setOutput("Code executed successfully");
+        }
       } finally {
         // Restore original console.log
         console.log = originalLog;
@@ -102,7 +104,6 @@ const BlockCodePage = () => {
       setOutput(`Error: ${error.message}`);
     }
   };
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
