@@ -14,7 +14,7 @@ const activeConnections = new Map();
 
 app.use(
   cors({
-    origin: ["https://moveo-project-riix.vercel.app"],
+    origin: ["https://magenta-cucurucho-e3417f.netlify.app"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -26,7 +26,7 @@ app.use("/api/codeblocks", codeBlockRoute);
 const io = new Server(server, {
   allowEIO3: true,
   cors: {
-    origin: "https://moveo-project-riix.vercel.app",
+    origin: "https://magenta-cucurucho-e3417f.netlify.app",
     methods: ["GET", "POST"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
