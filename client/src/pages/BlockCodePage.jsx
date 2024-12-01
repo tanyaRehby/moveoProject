@@ -48,6 +48,11 @@ const BlockCodePage = () => {
 
   const runCode = () => {
     const logs = [];
+    const customConsole = {
+      log: (...args) => {
+        logs.push(args.join(" "));
+      },
+    };
 
     try {
       if (!codeBlock?.template) {
@@ -55,30 +60,38 @@ const BlockCodePage = () => {
         return;
       }
 
-      const userCode = codeBlock.template.replace(/\s+/g, "").trim();
-      const solution = codeBlock.solution.replace(/\s+/g, "").trim();
-      const originalConsoleLog = console.log;
-      console.log = (...args) => {
-        logs.push(args.join(" "));
+      const cleanUserCode = codeBlock.template.replace(/\s+/g, "").trim();
+      const cleanSolution = codeBlock.solution.replace(/\s+/g, "").trim();
+
+      const executeCode = (code) => {
+        const context = {
+          console: customConsole,
+        };
+
+        const wrappedCode = `
+          const console = arguments[0];
+          ${code}
+        `;
+
+        eval(wrappedCode);
       };
 
-      /* eslint-disable no-eval */
-      eval(codeBlock.template);
-      /* eslint-enable no-eval */
+      executeCode(codeBlock.template);
 
-      console.log = originalConsoleLog;
-
-      setOutput(logs.join("\n") || "Code executed successfully");
-      if (userCode === solution) {
-        alert("code is correct!! ✅ ");
-        return;
-      }
-      if (userCode !== solution) {
-        alert("code is incorrect ❌");
-        return;
+      if (cleanUserCode === cleanSolution) {
+        alert("Code is correct! ✅");
+        setOutput("Code is correct and executed successfully!");
+      } else if (cleanSolution) {
+        alert("Code is incorrect ❌");
+        setOutput(
+          logs.join("\n") || "Code executed, but solution is incorrect"
+        );
+      } else {
+        setOutput(logs.join("\n") || "Code executed successfully");
       }
     } catch (error) {
       setOutput(`Error: ${error.message}`);
+      alert(`Error executing code: ${error.message}`);
     }
   };
 
