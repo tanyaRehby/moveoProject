@@ -29,7 +29,7 @@ const LobbyPage = () => {
       <div className="lobby-page">
         <h1>Choose code block</h1>
         {/*map over the list of codeblocks*/}
-        {codeBlocks.map((block) => {
+        {codeBlocks?.map((block) => {
           return (
             <div
               className="code-block"
