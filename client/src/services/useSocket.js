@@ -2,10 +2,12 @@
 import { useEffect, useState } from "react";
 //importing the socket service and socket instance
 import socketService from "./socket";
+import { useNavigate } from "react-router-dom";
 //handling socket errors globally
 
 //custom hook to manage socket connections and interactions
 export const useSocket = (roomId) => {
+  const navigate = useNavigate();
   const [studentCount, setStudentCount] = useState(0);
   const [role, setRole] = useState(null);
   const [code, setCode] = useState("");
@@ -20,6 +22,10 @@ export const useSocket = (roomId) => {
     if (roomId) {
       socketService.joinRoom(roomId);
     }
+    newSocket.on("mentor-disconnected", () => {
+      alert("Mentor has disconnected");
+      navigate("/");
+    });
     newSocket.on("student-count", (count) => {
       console.log(count);
       setStudentCount(count);

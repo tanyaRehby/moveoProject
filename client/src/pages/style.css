@@ -1,5 +1,5 @@
 h2 {
-  color: rgb(55, 55, 168);
+  color: rgb(200, 200, 238);
   font-style: oblique;
   font-size: 15px;
   text-align: center;
@@ -15,13 +15,14 @@ body {
 h1 {
   text-align: center;
   margin: 20px 0;
-  color: #4a90e2;
+  color: rgb(163, 163, 219);
+  font-style: italic;
 }
 .block-code-page {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: black;
+  background-color: rgb(12, 3, 20);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -42,7 +43,8 @@ h1 {
   padding: 20px;
 }
 .lobby-page h1 {
-  color: brown;
+  color: rgb(120, 42, 165);
+  font-style: oblique;
 }
 .lobby-page .code-block {
   padding: 10px 20px;
@@ -54,7 +56,10 @@ h1 {
   transition: all 0.3s ease-in-out;
 }
 .lobby-page .code-block:hover {
-  background-color: #4a90e2;
+  background-color: #a1659d;
   color: #fff;
   transform: scale(1.02);
+}
+.output-container {
+  color: #fff;
 }

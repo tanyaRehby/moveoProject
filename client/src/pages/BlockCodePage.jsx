@@ -1,58 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { codeBlocksService } from "../services/api";
+import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { oneDark } from "@codemirror/theme-one-dark";
-import CodeMirror from "@uiw/react-codemirror";
-import { autocompletion, completeFromList } from "@codemirror/autocomplete";
-import { io } from "socket.io-client";
+import { autocompletion } from "@codemirror/autocomplete";
 import { useSocket } from "../services/useSocket";
 
 const BlockCodePage = () => {
-  const { id } = useParams(); //extracting the id from the URL parameters
-  const [codeBlock, setCodeBlock] = useState(null); // state to store the code block data
-  const [output, setOutput] = useState(""); // state to store the output of the executed code
-  const { socket, studentCount, role, code, sendCodeUpdate } = useSocket(id); // using the custom hook to manage socket connections and get room data
+  const { id } = useParams();
+  const [codeBlock, setCodeBlock] = useState(null);
+  const [output, setOutput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const { socket, studentCount, role, code, sendCodeUpdate } = useSocket(id);
 
+  // Fetch code block on component mount
   useEffect(() => {
     const initializeCodeBlock = async () => {
       try {
-        const block = await codeBlocksService.getCodeBlockById(id); // fetch code block by id
-        setCodeBlock(block); // setting the fetched codeblock to state
+        const block = await codeBlocksService.getCodeBlockById(id);
+        setCodeBlock(block);
       } catch (error) {
         console.error("Failed to fetch block:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     initializeCodeBlock();
-  }, [id]); // effect runs every time the 'id' parameter changes
-  useEffect(() => {
-    if (role) {
-      console.log(role); // log the role mentor or student when it is set
-    }
-  }, [role]); // effect runs when the role changes
+  }, [id]);
 
-  const runCode = () => {
-    const logs = [];
-    const customConsule = {
-      log: (...args) => {
-        logs.push(args.join(" "));
-      },
-    };
-    debugger;
-    try {
-      if (!codeBlock?.template) {
-        setOutput("no code to executing");
-        return;
-      }
-
-      const fn = new Function("console", codeBlock.template);
-      fn(customConsule);
-
-      setOutput(logs.join("\n") || "code execute sucssesfuly");
-    } catch (error) {
-      setOutput("Error: " + error.message);
-    }
-  };
+  // Update code block when code changes from socket
   useEffect(() => {
     if (code) {
       setCodeBlock((prevBlock) => ({
@@ -61,31 +38,88 @@ const BlockCodePage = () => {
       }));
     }
   }, [code]);
+
+  // Log role changes
+  useEffect(() => {
+    if (role) {
+      console.log("Current role:", role);
+    }
+  }, [role]);
+
+  const runCode = () => {
+    const logs = [];
+    const customConsole = {
+      log: (...args) => {
+        logs.push(args.join(" "));
+      },
+    };
+
+    try {
+      if (!codeBlock?.template) {
+        setOutput("No code to execute");
+        return;
+      }
+      const clearUserCode = codeBlock.template.replace(/\s+/g, "").trim();
+      const cleanSolution = codeBlock.solution.replace(/\s+/g, "").trim();
+      if (clearUserCode === cleanSolution) {
+        alert("Code is correct ✅");
+        return;
+      }
+      if (cleanSolution !== "") {
+        alert("Code is incorrect ❌");
+        return;
+      }
+      const fn = new Function("console", codeBlock.template);
+      fn(customConsole);
+      setOutput(logs.join("\n") || "Code executed successfully");
+    } catch (error) {
+      setOutput(`Error: ${error.message}`);
+    }
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!codeBlock) {
+    return <div>Code block not found</div>;
+  }
+
   return (
     <div className="block-code-page">
-      <h1>{codeBlock?.title}</h1>
-      <h2>{codeBlock?.instructions}</h2>
+      <h1>{codeBlock.title}</h1>
+      <h2>{codeBlock.instructions}</h2>
       <p>Number of students in the room: {studentCount?.toString()}</p>
+      <p>Your role: {role || "Not assigned"}</p>
+
       <div className="code-mirror-container">
         <CodeMirror
-          value={codeBlock?.template} // the initial codeblock template to display in the editor
+          value={codeBlock.template}
           height="500px"
           style={{ fontSize: "16px" }}
-          extensions={[javascript(), autocompletion()]} //js and autocompletion features
-          theme={oneDark} //dark theme that makes syntax highlighting
-          //check
+          extensions={[javascript(), autocompletion()]}
+          theme={oneDark}
+          readOnly={role === "mentor"}
           onChange={(value) => {
-            setCodeBlock((prevBlock) => ({
-              ...prevBlock,
-              template: value,
-            }));
-            sendCodeUpdate(code);
+            if (role !== "mentor") {
+              setCodeBlock((prevBlock) => ({
+                ...prevBlock,
+                template: value,
+              }));
+              sendCodeUpdate(value);
+            }
           }}
         />
       </div>
-      <button onClick={runCode}>Run Code</button> {/* to run the code*/}
-      {/*display the output*/}
-      <div className="output-container">
+
+      <button
+        onClick={runCode}
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Run Code
+      </button>
+
+      <div className="output-container mt-4 p-4 bg-gray-800 text-white rounded">
         <h3>Output:</h3>
         <pre>{output}</pre>
       </div>

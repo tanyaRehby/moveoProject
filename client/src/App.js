@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-//import React, { useState } from 'react';
 import { Controlled as CodeMirror } from "react-codemirror2";
-import "codemirror/lib/codemirror.css"; // עיצוב עבור CodeMirror
-import "codemirror/mode/javascript/javascript"; // ציון של שפת JavaScript
+import "codemirror/lib/codemirror.css";
+import "codemirror/mode/javascript/javascript";
 import LobbyPage from "./pages/LobbyPage";
 import BlockCodePage from "./pages/BlockCodePage";
 import "./pages/style.css";
