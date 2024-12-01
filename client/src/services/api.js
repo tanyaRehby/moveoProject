@@ -1,7 +1,7 @@
 // importing the axios library for making HTTP requests
 import axios from "axios";
 // define the base URL for the api
-const BASE_URL = "https://moveo-project.vercel.app/api";
+const BASE_URL = "https://moveoproject-fcrr.onrender.com/api";
 const api = axios.create({
   baseURL: BASE_URL, //setting the base URL for all api requests
   headers: { "Content-Type": "application/json" }, //setting content type header to json for all requests
