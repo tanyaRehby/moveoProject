@@ -70,8 +70,7 @@ const BlockCodePage = () => {
         return;
       }
 
-      const fn = new Function("console", codeBlock.template);
-      fn(customConsole);
+      eval(` (function(console) { ${codeBlock.template} })(customConsole); `);
       setOutput(logs.join("\n") || "Code executed successfully");
     } catch (error) {
       setOutput(`Error: ${error.message}`);

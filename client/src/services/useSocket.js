@@ -50,7 +50,7 @@ export const useSocket = (roomId) => {
         newSocket.disconnect(); //disconnect from the socket connection
       }
     };
-  }, [roomId]);
+  }, [roomId, navigate]);
 
   const sendCodeUpdate = (code) => {
     if (roomId) {
