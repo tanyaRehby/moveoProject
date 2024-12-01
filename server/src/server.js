@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 const io = new Server(server, {
   allowEIO3: true,
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://moveo-project-riix.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -28,7 +28,9 @@ const io = new Server(server, {
   pingInterval: 25000,
 });
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({ origin: "https://moveo-project-riix.vercel.app", credentials: true })
+);
 app.use(express.json());
 app.use("/api/codeblocks", codeBlockRoute);
 
