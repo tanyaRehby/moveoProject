@@ -14,7 +14,7 @@ const activeConnections = new Map();
 
 app.use(
   cors({
-    origin: ["https://magenta-cucurucho-e3417f.netlify.app"],
+    origin: "https://magenta-cucurucho-e3417f.netlify.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
