@@ -57,12 +57,6 @@ const BlockCodePage = () => {
 
       const userCode = codeBlock.template.replace(/\s+/g, "").trim();
       const solution = codeBlock.solution.replace(/\s+/g, "").trim();
-
-      if (userCode !== solution) {
-        alert("code is incorrect ❌");
-        return;
-      }
-
       const originalConsoleLog = console.log;
       console.log = (...args) => {
         logs.push(args.join(" "));
@@ -75,6 +69,14 @@ const BlockCodePage = () => {
       console.log = originalConsoleLog;
 
       setOutput(logs.join("\n") || "Code executed successfully");
+      if (userCode === solution) {
+        alert("code is correct!! ✅ ");
+        return;
+      }
+      if (userCode !== solution) {
+        alert("code is incorrect ❌");
+        return;
+      }
     } catch (error) {
       setOutput(`Error: ${error.message}`);
     }
