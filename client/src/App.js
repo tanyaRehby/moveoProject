@@ -1,0 +1,28 @@
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+//import React, { useState } from 'react';
+import { Controlled as CodeMirror } from "react-codemirror2";
+import "codemirror/lib/codemirror.css"; // עיצוב עבור CodeMirror
+import "codemirror/mode/javascript/javascript"; // ציון של שפת JavaScript
+import LobbyPage from "./pages/LobbyPage";
+import BlockCodePage from "./pages/BlockCodePage";
+import "./pages/style.css";
+//main app component
+function App() {
+  return (
+    //router component enables client-side routing
+    <Router>
+      <div>
+        {/*defining the routing structure for the app */}
+        <Routes>
+          {/*route for the Lobbypage */}
+          <Route path="/" element={<LobbyPage />} />
+          {/*route for the BlockCodePage */}
+          <Route path="/block/:id" element={<BlockCodePage />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
