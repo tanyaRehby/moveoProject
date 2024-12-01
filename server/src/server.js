@@ -12,10 +12,16 @@ const rooms = new Map(); // stores the rooms and their associated data
 
 const activeConnections = new Map();
 
-app.use((req, res, next) => {
-  console.log(req.method, req.url);
-  next();
-});
+app.use(
+  cors({
+    origin: ["https://moveo-project-riix.vercel.app", "http://localhost:5173"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.use(express.json());
+app.use("/api/codeblocks", codeBlockRoute);
 
 const io = new Server(server, {
   allowEIO3: true,
@@ -28,18 +34,6 @@ const io = new Server(server, {
   pingTimeout: 60000,
   pingInterval: 25000,
 });
-
-app.use(
-  cors({
-    origin: ["https://moveo-project-riix.vercel.app", "http://localhost:5173"],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-app.use(express.json());
-app.use("/api/codeblocks", codeBlockRoute);
-
 io.on("connection", (socket) => {
   console.log("New user connected:", socket.id);
 
