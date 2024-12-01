@@ -48,29 +48,32 @@ const BlockCodePage = () => {
 
   const runCode = () => {
     const logs = [];
-    const customConsole = {
-      log: (...args) => {
-        logs.push(args.join(" "));
-      },
-    };
 
     try {
       if (!codeBlock?.template) {
         setOutput("No code to execute");
         return;
       }
-      const clearUserCode = codeBlock.template.replace(/\s+/g, "").trim();
-      const cleanSolution = codeBlock.solution.replace(/\s+/g, "").trim();
-      if (clearUserCode === cleanSolution) {
-        alert("Code is correct ✅");
-        return;
-      }
-      if (cleanSolution !== "") {
-        alert("Code is incorrect ❌");
+
+      const userCode = codeBlock.template.replace(/\s+/g, "").trim();
+      const solution = codeBlock.solution.replace(/\s+/g, "").trim();
+
+      if (userCode !== solution) {
+        alert("code is incorrect ❌");
         return;
       }
 
-      eval(` (function(console) { ${codeBlock.template} })(customConsole); `);
+      const originalConsoleLog = console.log;
+      console.log = (...args) => {
+        logs.push(args.join(" "));
+      };
+
+      /* eslint-disable no-eval */
+      eval(codeBlock.template);
+      /* eslint-enable no-eval */
+
+      console.log = originalConsoleLog;
+
       setOutput(logs.join("\n") || "Code executed successfully");
     } catch (error) {
       setOutput(`Error: ${error.message}`);
