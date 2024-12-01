@@ -12,7 +12,7 @@ const BlockCodePage = () => {
   const [codeBlock, setCodeBlock] = useState(null);
   const [output, setOutput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const { socket, studentCount, role, code, sendCodeUpdate } = useSocket(id);
+  const { studentCount, role, code, sendCodeUpdate } = useSocket(id);
 
   // Fetch code block on component mount
   useEffect(() => {
@@ -69,6 +69,7 @@ const BlockCodePage = () => {
         alert("Code is incorrect ❌");
         return;
       }
+
       const fn = new Function("console", codeBlock.template);
       fn(customConsole);
       setOutput(logs.join("\n") || "Code executed successfully");
