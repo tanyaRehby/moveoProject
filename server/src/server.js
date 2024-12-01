@@ -14,7 +14,7 @@ const activeConnections = new Map();
 
 app.use(
   cors({
-    origin: ["https://moveo-project-riix.vercel.app", "http://localhost:5173"],
+    origin: ["https://moveo-project-riix.vercel.app"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
