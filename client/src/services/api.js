@@ -5,6 +5,7 @@ const BASE_URL = "https://moveo-project.vercel.app/api";
 const api = axios.create({
   baseURL: BASE_URL, //setting the base URL for all api requests
   headers: { "Content-Type": "application/json" }, //setting content type header to json for all requests
+  withCredentials: true,
 });
 //object with methods to interact with the codeblocks api
 export const codeBlocksService = {
