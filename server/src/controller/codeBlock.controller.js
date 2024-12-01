@@ -5,6 +5,9 @@ const codeblock = require("../models/CodeBlock.model");
 exports.getAllCodeBlocks = async (req, res) => {
   try {
     const codeBlock = await codeblock.find().sort({ createAt: -1 }); //sorts them by the createAt field in descending order
+    if (!codeBlock || codeBlock === 0) {
+      return res.status(404).json({ message: "No code blocks" });
+    }
     res.status(200).json(codeBlock);
   } catch (error) {
     res.status(500).json({ message: error.message });
