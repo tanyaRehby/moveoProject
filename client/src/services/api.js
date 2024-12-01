@@ -1,7 +1,7 @@
 // importing the axios library for making HTTP requests
 import axios from "axios";
 // define the base URL for the api
-const BASE_URL = "https://moveo-project.vercel.app";
+const BASE_URL = "https://moveo-project.vercel.app/api";
 const api = axios.create({
   baseURL: BASE_URL, //setting the base URL for all api requests
   headers: { "Content-Type": "application/json" }, //setting content type header to json for all requests
@@ -13,7 +13,7 @@ export const codeBlocksService = {
   getAllCodeBlocks: async () => {
     try {
       //get request to fetch all code blocks from the server
-      const response = await api.get("/api/codeblocks");
+      const response = await api.get("/codeblocks");
       return response.data;
     } catch (error) {
       console.error(error);
@@ -23,7 +23,7 @@ export const codeBlocksService = {
   getCodeBlockById: async (id) => {
     try {
       //get request to fetch a specific code block by the id from the server
-      const response = await api.get(`/api/codeblocks/${id}`);
+      const response = await api.get(`/codeblocks/${id}`);
       return response.data;
     } catch (error) {
       console.error(error);
