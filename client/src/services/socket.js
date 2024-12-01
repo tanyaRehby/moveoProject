@@ -1,55 +1,73 @@
-import { connect, io } from "socket.io-client";
+import io from "socket.io-client";
+
 const SOCKET_URL = "http://localhost:4000";
-export const socket = io(SOCKET_URL, {
-  autoConnect: true,
-  reconnection: true,
-  transports: ["websocket", "polling"],
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
-  timeout: 10000,
-});
-const socketService = {
+
+let socket = null;
+
+export const socketService = {
   init() {
-    socket.on("connect", () => {
-      console.log("connection succesfully!");
-    });
-    socket.on("connect_error", (error) => {
-      console.error("socket connction error", error);
-    });
-    socket.on("disconnect", (reason) => {
-      console.log("socket disconnect ", reason);
-    });
-    socket.on("reconnect", (attemptnumber) => {
-      console.log("socket reconect number ", attemptnumber);
-    });
+    if (!socket) {
+      socket = io(SOCKET_URL, {
+        autoConnect: true,
+        reconnection: true,
+        transports: ["websocket", "polling"],
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 10000,
+      });
+
+      // Connection event handlers
+      socket.on("connect", () => {
+        console.log("Connection successfully established!", socket.id);
+      });
+
+      socket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error);
+      });
+
+      socket.on("disconnect", (reason) => {
+        console.log("Socket disconnected:", reason);
+      });
+
+      socket.on("reconnect", (attemptNumber) => {
+        console.log("Socket reconnected, attempt number:", attemptNumber);
+      });
+    }
     return socket;
   },
+
   joinRoom(roomId) {
-    if (!socket.connect) {
+    if (!socket?.connected) {
       socket.connect();
     }
-    socket.emit("join-room", roomId);
+    socket.emit("join room", roomId);
+    console.log("Attempting to join room:", roomId);
   },
+
   disconnectRoom(roomId) {
-    socket.emit("disconnect-room", roomId);
+    socket.emit("leave room", roomId);
+    console.log("Leaving room:", roomId);
   },
+
   codeUpdate(roomId, code) {
-    socket.emit("code-update", { roomId, code });
+    socket.emit("code-change", { roomId, newcode: code });
+    console.log("Emitting code update for room:", roomId);
   },
+
   disconnect() {
-    if (socket.connect) {
+    if (socket?.connected) {
       socket.disconnect();
+      console.log("Socket manually disconnected");
     }
   },
+
   on(event, callback) {
     socket.on(event, callback);
   },
+
   off(event, callback) {
     socket.off(event, callback);
   },
-  getStatus() {
-    return { connected: socket.connected, id: socket.id };
-  },
 };
-socketService.init();
+
 export default socketService;

@@ -1,8 +1,9 @@
-/* h1 {
-  color: blue;
+h2 {
+  color: rgb(55, 55, 168);
   font-style: oblique;
-  font-size: 70px;
-} */
+  font-size: 15px;
+  text-align: center;
+}
 body {
   margin: 0;
   font-family: Arial, sans-serif;

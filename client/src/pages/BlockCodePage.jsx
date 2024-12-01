@@ -9,64 +9,77 @@ import { io } from "socket.io-client";
 import { useSocket } from "../services/useSocket";
 
 const BlockCodePage = () => {
-  const { id } = useParams(); // takes the id form the URl
-  const navigate = useNavigate();
-  const [codeBlock, setCodeBlock] = useState(null);
+  const { id } = useParams(); //extracting the id from the URL parameters
+  const [codeBlock, setCodeBlock] = useState(null); // state to store the code block data
+  const [output, setOutput] = useState(""); // state to store the output of the executed code
+  const { socket, studentCount, role, code, sendCodeUpdate } = useSocket(id); // using the custom hook to manage socket connections and get room data
 
-  const [output, setOutput] = useState(""); //check
-  const { socket, studentCount } = useSocket(id); //custom hook to manage socket connection
-  //hook to listen for updates of the student count
   useEffect(() => {
-    debugger;
-    console.log(studentCount);
-    // listen {for student count updates from the socket server
-  }, []);
-  //hook to fetch the codeblock data based on the room id
-  useEffect(() => {
-    const initlizeCodeBlock = async () => {
+    const initializeCodeBlock = async () => {
       try {
-        const block = await codeBlocksService.getCodeBlockById(id);
-        // if (!block) {
-        //   navigate("./LobbyPage"); ///////////////////////////// check
-        // }
-        setCodeBlock(block);
+        const block = await codeBlocksService.getCodeBlockById(id); // fetch code block by id
+        setCodeBlock(block); // setting the fetched codeblock to state
       } catch (error) {
-        console.error("fail to fetch block", error);
+        console.error("Failed to fetch block:", error);
       }
     };
-    initlizeCodeBlock();
-  }, [id]);
+    initializeCodeBlock();
+  }, [id]); // effect runs every time the 'id' parameter changes
+  useEffect(() => {
+    if (role) {
+      console.log(role); // log the role mentor or student when it is set
+    }
+  }, [role]); // effect runs when the role changes
 
-  console.log("id", id); //check
-  //check
   const runCode = () => {
-    // if(codeBlock.solution==codeBlock){
-
-    // }
+    const logs = [];
+    const customConsule = {
+      log: (...args) => {
+        logs.push(args.join(" "));
+      },
+    };
+    debugger;
     try {
-      // הרצת הקוד באמצעות eval() ותפיסת התוצאה
-      const result = eval(codeBlock.template); // זה יכול להפעיל רק קוד JavaScript
-      setOutput(result); // עדכון ה-output בתוצאה של הקוד
+      if (!codeBlock?.template) {
+        setOutput("no code to executing");
+        return;
+      }
+
+      const fn = new Function("console", codeBlock.template);
+      fn(customConsule);
+
+      setOutput(logs.join("\n") || "code execute sucssesfuly");
     } catch (error) {
-      setOutput("Error: " + error.message); // טיפול בשגיאה אם יש
+      setOutput("Error: " + error.message);
     }
   };
+  useEffect(() => {
+    if (code) {
+      setCodeBlock((prevBlock) => ({
+        ...prevBlock,
+        template: code,
+      }));
+    }
+  }, [code]);
   return (
-    /////////////////checkkkkkkkkkkk
     <div className="block-code-page">
       <h1>{codeBlock?.title}</h1>
+      <h2>{codeBlock?.instructions}</h2>
       <p>Number of students in the room: {studentCount?.toString()}</p>
       <div className="code-mirror-container">
-        <CodeMirror // //////////////////////////////////////////////check
+        <CodeMirror
           value={codeBlock?.template} // the initial codeblock template to display in the editor
           height="500px"
           style={{ fontSize: "16px" }}
           extensions={[javascript(), autocompletion()]} //js and autocompletion features
           theme={oneDark} //dark theme that makes syntax highlighting
           //check
-          onInput={(value) => {
-            console.log("Updated Code:", value);
-            setCodeBlock(value);
+          onChange={(value) => {
+            setCodeBlock((prevBlock) => ({
+              ...prevBlock,
+              template: value,
+            }));
+            sendCodeUpdate(code);
           }}
         />
       </div>
