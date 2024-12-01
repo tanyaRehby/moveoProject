@@ -63,35 +63,45 @@ const BlockCodePage = () => {
       const cleanUserCode = codeBlock.template.replace(/\s+/g, "").trim();
       const cleanSolution = codeBlock.solution.replace(/\s+/g, "").trim();
 
-      const executeCode = (code) => {
-        const context = {
-          console: customConsole,
-        };
-        console.log(context);
-        const wrappedCode = `
-          const console = arguments[0];
-          ${code}
-        `;
-
-        eval(wrappedCode);
-      };
-
-      executeCode(codeBlock.template);
-
+      // Check if solution matches
       if (cleanUserCode === cleanSolution) {
         alert("Code is correct! ✅");
-        setOutput("Code is correct and executed successfully!");
-      } else if (cleanSolution) {
-        alert("Code is incorrect ❌");
-        setOutput(
-          logs.join("\n") || "Code executed, but solution is incorrect"
-        );
-      } else {
+        setOutput("Code is correct!");
+        return;
+      }
+
+      // Execute code and capture output
+      const code = codeBlock.template;
+      let result = "";
+
+      // Capture console.log calls
+      const originalLog = console.log;
+      console.log = (...args) => {
+        result += args.join(" ") + "\n";
+        logs.push(args.join(" "));
+      };
+
+      // Execute the code
+      try {
+        // Create and execute async function
+        const AsyncFunction = Object.getPrototypeOf(
+          async function () {}
+        ).constructor;
+        // eslint-disable-next-line no-new-func
+        const asyncExecute = new AsyncFunction("console", code);
+        asyncExecute(customConsole);
+
+        if (cleanSolution) {
+          alert("Code is incorrect ❌");
+        }
+
         setOutput(logs.join("\n") || "Code executed successfully");
+      } finally {
+        // Restore original console.log
+        console.log = originalLog;
       }
     } catch (error) {
       setOutput(`Error: ${error.message}`);
-      alert(`Error executing code: ${error.message}`);
     }
   };
 
