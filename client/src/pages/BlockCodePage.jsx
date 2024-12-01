@@ -67,7 +67,7 @@ const BlockCodePage = () => {
         const context = {
           console: customConsole,
         };
-
+        console.log(context);
         const wrappedCode = `
           const console = arguments[0];
           ${code}
