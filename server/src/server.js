@@ -23,13 +23,19 @@ const io = new Server(server, {
     origin: "https://moveo-project-riix.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
   pingTimeout: 60000,
   pingInterval: 25000,
 });
 
 app.use(
-  cors({ origin: "https://moveo-project-riix.vercel.app", credentials: true })
+  cors({
+    origin: ["https://moveo-project-riix.vercel.app", "http://localhost:5173"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 app.use(express.json());
 app.use("/api/codeblocks", codeBlockRoute);
