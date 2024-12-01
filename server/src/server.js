@@ -28,12 +28,9 @@ const io = new Server(server, {
   allowEIO3: true,
   cors: {
     origin: "https://magenta-cucurucho-e3417f.netlify.app",
-    methods: ["GET", "POST"],
+
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
   },
-  pingTimeout: 60000,
-  pingInterval: 25000,
 });
 io.on("connection", (socket) => {
   console.log("New user connected:", socket.id);
