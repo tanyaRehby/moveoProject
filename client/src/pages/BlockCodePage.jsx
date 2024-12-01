@@ -72,12 +72,10 @@ const BlockCodePage = () => {
 
       // Execute code and capture output
       const code = codeBlock.template;
-      let result = "";
 
       // Capture console.log calls
       const originalLog = console.log;
       console.log = (...args) => {
-        result += args.join(" ") + "\n";
         logs.push(args.join(" "));
       };
 
