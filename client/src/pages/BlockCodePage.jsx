@@ -10,7 +10,7 @@ import { useSocket } from "../services/useSocket";
 const BlockCodePage = () => {
   const { id } = useParams();
   const [codeBlock, setCodeBlock] = useState(null);
-  const [output, setOutput] = useState("");
+
   const [isLoading, setIsLoading] = useState(true);
   const { studentCount, role, code, sendCodeUpdate } = useSocket(id);
 
@@ -47,18 +47,8 @@ const BlockCodePage = () => {
   }, [role]);
 
   const runCode = () => {
-    const logs = [];
-    const customConsole = {
-      log: (...args) => {
-        const logMessage = args.join(" ");
-        logs.push(logMessage);
-        setOutput((prev) => [...prev, logMessage].join("\n"));
-      },
-    };
-
     try {
       if (!codeBlock?.template) {
-        setOutput("No code to execute");
         return;
       }
 
@@ -68,40 +58,15 @@ const BlockCodePage = () => {
       // Solution check
       if (cleanUserCode === cleanSolution) {
         alert("Code is correct! ✅");
-        setOutput("Code is correct!");
+
         return;
       }
-
-      // Clear previous output
-      setOutput("");
-
-      // Execute code in a controlled environment
-      // Use the original console.log but wrap it
-      const originalLog = console.log;
-      console.log = (...args) => {
-        customConsole.log(...args);
-        originalLog(...args);
-      };
-
-      try {
-        // Execute user code in a string context
-        (0, eval)(codeBlock.template);
-        debugger;
-        // Show incorrect message if solution exists
-        if (cleanSolution) {
-          alert("Code is incorrect ❌");
-        }
-
-        // Show success message if no logs were generated
-        if (logs.length === 0) {
-          setOutput("Code executed successfully");
-        }
-      } finally {
-        // Restore original console.log
-        console.log = originalLog;
+      if (cleanUserCode !== cleanSolution) {
+        alert("Code is incorrect ❌");
+        return;
       }
     } catch (error) {
-      setOutput(`Error: ${error.message}`);
+      console.error(`Error: ${error.message}`);
     }
   };
   if (isLoading) {
@@ -145,11 +110,6 @@ const BlockCodePage = () => {
       >
         Run Code
       </button>
-
-      <div className="output-container mt-4 p-4 bg-gray-800 text-white rounded">
-        <h3>Output:</h3>
-        <pre>{output}</pre>
-      </div>
     </div>
   );
 };
